@@ -30,7 +30,7 @@ class ConfirmEmail extends Mailable
      */
     public function build()
     {
-        return $this->from('phumrapee.limpianchop@ivao.aero')
+        return $this->from('phumrapee.limpianchop@ivao.aero', 'RFE Booking System')
                     ->subject('Confirmation Email')
                     ->view('email.confirm')
                     ->with('division', $this->division)
