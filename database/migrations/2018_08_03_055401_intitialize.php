@@ -35,18 +35,17 @@ class Intitialize extends Migration
         });
         Schema::create('flights', function (Blueprint $table) {
             $table->increments('id');
-            $table->text('token');
             $table->text('event_id');
-            $table->string('division');
-            $table->string('vid');
-            $table->string('rating');
-            $table->string('callsign');
-            $table->string('aircraft');
-            $table->string('rule');
-            $table->string('type');
-            $table->string('load');
-            $table->time('time_departure');
-            $table->time('time_arrival');
+            $table->string('user_division')->nullable();
+            $table->string('user_vid')->nullable();
+            $table->string('user_rating')->nullable();
+            $table->string('aircraft_callsign');
+            $table->string('aircraft_model')->nullable();
+            $table->string('flight_rule')->nullable();
+            $table->string('flight_type')->nullable();
+            $table->string('flight_load')->nullable();
+            $table->time('time_departure')->nullable();
+            $table->time('time_arrival')->nullable();
             $table->timestamps();
             $table->SoftDeletes();
         });
