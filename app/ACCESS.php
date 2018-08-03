@@ -16,9 +16,9 @@ class ACCESS extends Model
     protected $primaryKey = 'id';
 
     protected $fillable = [
-      'key',
-      'division',
-      'is_allowed'
+        'key',
+        'division',
+        'is_allowed'
     ];
 
     protected $hidden = [

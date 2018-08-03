@@ -11,7 +11,7 @@ class EVENT extends Model
 
     use SoftDeletes;
 
-    protected $table = 'nico';
+    protected $table = 'events';
 
     protected $primaryKey = 'id';
 

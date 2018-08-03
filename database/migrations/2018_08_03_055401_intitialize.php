@@ -26,8 +26,8 @@ class Intitialize extends Migration
             $table->text('token');
             $table->text('event_id');
             $table->text('event_name');
-            $table->timestamp('booktime_start');
-            $table->timestamp('booktime_end');
+            $table->dateTime('booktime_start')->nullable();
+            $table->dateTime('booktime_end')->nullable();
             $table->string('airport_departure');
             $table->string('airport_arrival');
             $table->timestamps();
@@ -36,8 +36,10 @@ class Intitialize extends Migration
         Schema::create('flights', function (Blueprint $table) {
             $table->increments('id');
             $table->text('event_id');
+            $table->text('flight_id');
             $table->string('user_division')->nullable();
             $table->string('user_vid')->nullable();
+            $table->string('user_email')->nullable();
             $table->string('user_rating')->nullable();
             $table->string('aircraft_callsign');
             $table->string('aircraft_model')->nullable();
@@ -48,6 +50,24 @@ class Intitialize extends Migration
             $table->time('time_arrival')->nullable();
             $table->timestamps();
             $table->SoftDeletes();
+        });
+        Schema::create('confirmpool', function (Blueprint $table) {
+            $table->increments('id');
+            $table->text('ticket_code');
+            $table->dateTime('ticket_timeout')->nullable();
+            $table->text('event_id');
+            $table->text('flight_id');
+            $table->string('user_division');
+            $table->string('user_vid');
+            $table->string('user_email');
+            $table->string('user_rating');
+            $table->string('aircraft_model');
+            $table->string('flight_rule');
+            $table->string('flight_type');
+            $table->string('flight_load');
+            $table->time('time_departure');
+            $table->time('time_arrival');
+            $table->timestamps();
         });
     }
 
@@ -61,5 +81,6 @@ class Intitialize extends Migration
         Schema::drop('access_key');
         Schema::drop('events');
         Schema::drop('flights');
+        Schema::drop('confirmpool');
     }
 }
