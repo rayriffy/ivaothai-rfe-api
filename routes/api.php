@@ -90,7 +90,13 @@ Route::post('getevents', function(Request $request) {
       );
   }
 
-  $data = App\ACCESS::select("event_id", "event_name", "booktime_start", "booktime_end", "airport_departure", "airport_arrival")->where("token", $request["access_key"])->get();
+  if(!(App\EVENT::where("token", $request["access_key"])->exists())) {
+    return array(
+        "response" => "success",
+        "data" => null
+    );
+  }
+  $data = App\EVENT::select("event_id", "event_name", "booktime_start", "booktime_end", "airport_departure", "airport_arrival")->where("token", $request["access_key"])->get();
 
   foreach($data as $dat) {
       $event[] = array(
@@ -115,14 +121,63 @@ Route::post('getevents', function(Request $request) {
   );
 });
 
+Route::post('getevent', function(Request $request) {
+  $request = $request->json()->all();
+
+  if(empty($request["access_key"]) || empty($request["data"]["event"]["id"])) {
+    return array(
+          "response" => "error",
+          "remark" => "missing some/all payload"
+      );
+  }
+
+  if(!(App\ACCESS::where("key", $request["access_key"])->exists())) {
+      return array(
+          "response" => "error",
+          "remark" => "access denined"
+      );
+  }
+
+  $data = $request["data"];
+
+  if(!(App\EVENT::where("token", $request["access_key"])->where("event_id", $data["event"]["id"])->exists())) {
+    return array(
+        "response" => "error",
+        "remark" => "event not found"
+    );
+  }
+
+  $dat = App\EVENT::select("event_id", "event_name", "booktime_start", "booktime_end", "airport_departure", "airport_arrival")->where("token", $request["access_key"])->where("event_id", $data["event"]["id"])->first();
+
+  $event = array(
+      "event" => array(
+          "id" => $dat["event_id"],
+          "name" => $dat["event_name"]
+      ),
+      "booking_time" => array(
+          "start" => $dat["booktime_start"],
+          "end" => $dat["booktime_end"]
+      ),
+      "airport" => array(
+          "departure" => $dat["airport_departure"],
+          "arrival" => $dat["airport_arrival"]
+      )
+  );
+
+  return array(
+      "response" => "success",
+      "data" => $event
+  );
+});
+
 Route::post('getflights', function(Request $request) {
   $request = $request->json()->all();
 
   if(empty($request["access_key"]) || empty($request["data"]["event"]["id"])) {
       return array(
           "response" => "error",
-          "remark" => "missing some/all payload")
-          ;
+          "remark" => "missing some/all payload"
+      );
   }
 
   if(!(App\ACCESS::where("key", $request["access_key"])->exists())) {
@@ -139,6 +194,12 @@ Route::post('getflights', function(Request $request) {
           "response" => "error",
           "remark" => "event not found"
       );
+  }
+  if(!(App\FLIGHT::where("event_id", $data["event"]["id"])->exists())) {
+    return array(
+        "response" => "success",
+        "data" => null
+    );
   }
   
   $query = App\FLIGHT::where("event_id", $data["event"]["id"])->get();
@@ -167,6 +228,69 @@ Route::post('getflights', function(Request $request) {
           )
       );
   }
+  
+  return array(
+      "response" => "success",
+      "data" => $flight
+  );
+});
+
+Route::post('getflight', function(Request $request) {
+  $request = $request->json()->all();
+
+  if(empty($request["access_key"]) || empty($request["data"]["event"]["id"]) || empty($request["data"]["flight"]["id"])) {
+      return array(
+          "response" => "error",
+          "remark" => "missing some/all payload"
+      );
+  }
+
+  if(!(App\ACCESS::where("key", $request["access_key"])->exists())) {
+      return array(
+          "response" => "error",
+          "remark" => "access denined"
+      );
+  }
+
+  $data = $request["data"];
+
+  if(!(App\EVENT::where("token", $request["access_key"])->where("event_id", $data["event"]["id"])->exists())) {
+      return array(
+          "response" => "error",
+          "remark" => "event not found"
+      );
+  }
+  if(!(App\FLIGHT::where("event_id", $data["event"]["id"])->where("flight_id", $data["flight"]["id"])->exists())) {
+    return array(
+        "response" => "error",
+        "remark" => "flight not found"
+    );
+  }
+  
+  $dat = App\FLIGHT::where("event_id", $data["event"]["id"])->where("flight_id", $data["flight"]["id"])->first();
+
+  $flight = array(
+      "aircraft" => array(
+          "callsign" => $dat["aircraft_callsign"],
+          "model" => $dat["aircraft_model"]
+      ),
+      "flight" => array(
+          "id" => $dat["flight_id"],
+          "rule" => $dat["flight_rule"],
+          "type" => $dat["flight_type"],
+          "load" => $dat["flight_load"]
+      ),
+      "user" => array(
+          "division" => $dat["user_division"],
+          "vid" => $dat["user_vid"],
+          "email" => $dat["user_email"],
+          "rating" => $dat["user_rating"]
+      ),
+      "time" => array(
+          "departure" => $dat["time_departure"],
+          "arrival" => $dat["time_arrival"]
+      )
+  );
   
   return array(
       "response" => "success",
@@ -371,4 +495,12 @@ Route::post('reserveflight', function(Request $request) {
       "response" => "success",
       "remark" => "verification email sent (may take 1-3 minutes)"
   );
+});
+
+Route::post('deleteevent', function(Request $request) {
+
+});
+
+Route::post('deleteflight', function(Request $request) {
+
 });
