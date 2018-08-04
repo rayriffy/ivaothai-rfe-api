@@ -485,7 +485,7 @@ Route::post('reserveflight', function(Request $request) {
   $hosted_division = App\ACCESS::select('division')->where('key', $tmp['token'])->first();
 
   $senddata = array(
-      "division" => $hosted_division["division"],
+      "division" => strtolower($hosted_division["division"]),
       "code" => $code
   );
 

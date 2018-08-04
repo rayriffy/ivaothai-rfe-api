@@ -19,7 +19,7 @@
       <div class="col col-lg-2">
       </div>
       <div class="col-md-auto">
-        <center><img src="https://ivao.aero/images/svg_logos/brand.svg" width="40%" /></center>
+        <center><img src="https://rfe.ivaothai.com/logo/brand.png" width="40%" /></center>
       </div>
       <div class="col col-lg-2">
       </div>
