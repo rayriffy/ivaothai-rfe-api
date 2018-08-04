@@ -76,7 +76,7 @@ Route::post('getaccess', function(Request $request) {
 Route::post('getevents', function(Request $request) {
   $request = $request->json()->all();
 
-  if(empty($request["access_key"]) || empty($request["access"])) {
+  if(empty($request["access_key"])) {
       return array(
           "response" => "error",
           "remark" => "missing some/all payload"
@@ -118,7 +118,7 @@ Route::post('getevents', function(Request $request) {
 Route::post('getflights', function(Request $request) {
   $request = $request->json()->all();
 
-  if(empty($request["access_key"]) || empty($request["access"]) || empty($request["data"]["event"]["id"])) {
+  if(empty($request["access_key"]) || empty($request["data"]["event"]["id"])) {
       return array(
           "response" => "error",
           "remark" => "missing some/all payload")
@@ -141,7 +141,7 @@ Route::post('getflights', function(Request $request) {
       );
   }
   
-  $query = App\EVENT::where("token", $request["access_key"])->where("event_id", $data["event"]["id"])->get();
+  $query = App\FLIGHT::where("event_id", $data["event"]["id"])->get();
 
   foreach($query as $dat) {
       $flight[] = array(
@@ -170,7 +170,7 @@ Route::post('getflights', function(Request $request) {
   
   return array(
       "response" => "success",
-      "data" => $fight
+      "data" => $flight
   );
 });
 
@@ -242,21 +242,6 @@ Route::post('createflight', function(Request $request) {
       );
   }
 
-  $event_booking_time = App\EVENT::select("booktime_start", "booktime_end")->where("token", $request["access_key"])->where("event_id", $data["event"]["id"])->first();
-  
-  if(Carbon\Carbon::parse($event_booking_time["booktime_start"])->isFuture()) {
-    return array(
-      "response" => "error",
-      "remark" => "booking is not start yet"
-    );
-  }
-  if(Carbon\Carbon::parse($event_booking_time["booktime_end"])->isPast()) {
-    return array(
-      "response" => "error",
-      "remark" => "booking is expired"
-    );
-  }
-
   if(App\FLIGHT::where('aircraft_callsign', $data["aircraft"]["callsign"])->where("event_id", $data["event"]["id"])->exists()) {
     return array(
       "response" => "error",
@@ -312,6 +297,21 @@ Route::post('reserveflight', function(Request $request) {
       );
   }
 
+  $event_booking_time = App\EVENT::select("booktime_start", "booktime_end")->where("token", $request["access_key"])->where("event_id", $data["event"]["id"])->first();
+  
+  if(Carbon\Carbon::parse($event_booking_time["booktime_start"])->isFuture()) {
+    return array(
+      "response" => "error",
+      "remark" => "booking is not start yet"
+    );
+  }
+  if(Carbon\Carbon::parse($event_booking_time["booktime_end"])->isPast()) {
+    return array(
+      "response" => "error",
+      "remark" => "booking is expired"
+    );
+  }
+
   if(!(App\FLIGHT::where("event_id", $data["event"]["id"])->where("flight_id", $data["flight"]["id"])->exists())) {
       return array(
           "response" => "error",
@@ -319,8 +319,21 @@ Route::post('reserveflight', function(Request $request) {
       );
   }
 
+  if(App\FLIGHT::where("user_vid", $data["user"]["vid"])->where("event_id", $data["event"]["id"])->exists()) {
+    return array(
+        "response" => "error",
+        "remark" => "you already reserved flight for this event"
+    );
+  }
+  if(App\CONFIRMPOOL::where("user_vid", $data["user"]["vid"])->where("event_id", $data["event"]["id"])->exists()) {
+    return array(
+        "response" => "error",
+        "remark" => "you already send confirmation email! please check your mailbox or wait 30 minutes to make ticket timed out"
+    );
+  }
+
   $check = App\FLIGHT::select("user_vid")->where("event_id", $data["event"]["id"])->where("flight_id", $data["flight"]["id"])->first();
-  if($check["user_vid"]=="null") {
+  if($check["user_vid"]!=null) {
     return array(
         "response" => "error",
         "remark" => "flight already reserved"
@@ -344,7 +357,8 @@ Route::post('reserveflight', function(Request $request) {
   $pool->time_arrival = $data["time"]["arrival"];
   $pool->save();
 
-  $hosted_division = App\ACCESS::select('division')->where('key', App\EVENT::select('token')->where('event_id', $data["event"]["id"])->first())->first();
+  $tmp = App\EVENT::select('token')->where('event_id', $data["event"]["id"])->first();
+  $hosted_division = App\ACCESS::select('division')->where('key', $tmp['token'])->first();
 
   $senddata = array(
       "division" => $hosted_division["division"],
