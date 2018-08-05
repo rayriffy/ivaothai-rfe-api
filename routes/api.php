@@ -497,8 +497,144 @@ Route::post('reserveflight', function (Request $request) {
   ];
 });
 
-Route::post('deleteevent', function (Request $request) {
+Route::delete('deleteevent', function (Request $request) {
+    $request = $request->json()->all();
+
+    if (empty($request['access_key']) || empty($request['data']['event']['id'])) {
+        return [
+          'response' => 'error',
+          'remark'   => 'missing some/all payload',
+      ];
+    }
+
+    if (!(App\ACCESS::where('key', $request['access_key'])->exists())) {
+        return [
+          'response' => 'error',
+          'remark'   => 'access denined',
+      ];
+    }
+
+    $data = $request['data'];
+
+    if (!(App\EVENT::where('token', $request['access_key'])->where('event_id', $data['event']['id'])->exists())) {
+        return [
+          'response' => 'error',
+          'remark'   => 'no event found',
+      ];
+    }
+
+    App\EVENT::where('token', $request['access_key'])->where('event_id', $data['event']['id'])->delete();
+    App\FLIGHT::where('event_id', $data['event']['id'])->delete();
+    App\CONFIRMPOOL::where('event_id', $data['event']['id'])->delete();
+
+    return [
+      'response' => 'success'
+  ];
 });
 
-Route::post('deleteflight', function (Request $request) {
+Route::delete('deleteflight', function (Request $request) {
+    $request = $request->json()->all();
+
+    if (empty($request['access_key']) || empty($request['data']['event']['id']) || empty($request['data']['flight']['id'])) {
+        return [
+          'response' => 'error',
+          'remark'   => 'missing some/all payload',
+      ];
+    }
+
+    if (!(App\ACCESS::where('key', $request['access_key'])->exists())) {
+        return [
+          'response' => 'error',
+          'remark'   => 'access denined',
+      ];
+    }
+
+    $data = $request['data'];
+
+    if (!(App\EVENT::where('token', $request['access_key'])->where('event_id', $data['event']['id'])->exists())) {
+        return [
+          'response' => 'error',
+          'remark'   => 'no event found',
+      ];
+    }
+
+    if (!(App\FLIGHT::where('event_id', $data['event']['id'])->where('flight_id', $data['flight']['id'])->exists())) {
+        return [
+          'response' => 'error',
+          'remark'   => 'no flight found',
+      ];
+    }
+
+    App\FLIGHT::where('event_id', $data['event']['id'])->where('flight_id', $data['flight']['id'])->delete();
+    App\CONFIRMPOOL::where('event_id', $data['event']['id'])->where('flight_id', $data['flight']['id'])->delete();
+
+    return [
+      'response' => 'success'
+  ];
+});
+
+Route::patch('updateevent', function(Request $request) {
+    $request = $request->json()->all();
+
+    if (empty($request['access_key']) || empty($request['data']['event']['id'])) {
+        return [
+          'response' => 'error',
+          'remark'   => 'missing some/all payload',
+      ];
+    }
+
+    if (!(App\ACCESS::where('key', $request['access_key'])->exists())) {
+        return [
+          'response' => 'error',
+          'remark'   => 'access denined',
+      ];
+    }
+
+    $data = $request['data'];
+
+    if (!(App\EVENT::where('token', $request['access_key'])->where('event_id', $data['event']['id'])->exists())) {
+        return [
+          'response' => 'error',
+          'remark'   => 'no event found',
+      ];
+    }
+
+    if (!(empty($data['event']['name']))) {
+        $update['event_name'] = $data['event']['name'];
+    }
+
+    if (!(empty($data['booking_time']['start']))) {
+        $update['booktime_start'] = $data['booking_time']['start'];
+    }
+
+    if (!(empty($data['booking_time']['end']))) {
+        $update['booktime_end'] = $data['booking_time']['end'];
+    }
+
+    if (!(empty($data['airport']['departure']))) {
+        $update['airport_departure'] = $data['airport']['departure'];
+    }
+
+    if (!(empty($data['airport']['arrival']))) {
+        $update['airport_arrival'] = $data['airport']['arrival'];
+    }
+
+    if (!isset($update)) {
+        return [
+          'response' => 'error',
+          'remark'   => 'nothing need to update',
+      ];
+    }
+
+    if (App\EVENT::where('token', $request['access_key'])->where('event_id', $data['event']['id'])->update($update)) {
+        return [
+          'response' => 'success'
+      ];
+    }
+    else {
+        return [
+            'response' => 'error',
+            'remark'   => 'unexpected error has occred',
+        ];
+    }
 });
