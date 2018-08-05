@@ -9,9 +9,6 @@ Requirements
 - PHP 7.1.3+
 - Composer
 - MySQL 5.7+
-- Node 8.11.1+
-
-PS. We reccomended using `yarn` for Node package manager
 
 Documentation
 -------------
