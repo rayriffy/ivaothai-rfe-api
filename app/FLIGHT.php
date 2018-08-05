@@ -28,14 +28,14 @@ class FLIGHT extends Model
         'flight_type',
         'flight_load',
         'time_departure',
-        'time_arrival'
+        'time_arrival',
     ];
 
     protected $hidden = [
         'id',
         'created_at',
         'updated_at',
-        'deleted_at'
+        'deleted_at',
     ];
 
     protected $dates = ['deleted_at'];
