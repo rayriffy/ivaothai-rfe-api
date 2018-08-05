@@ -528,7 +528,7 @@ Route::delete('deleteevent', function (Request $request) {
     App\CONFIRMPOOL::where('event_id', $data['event']['id'])->delete();
 
     return [
-      'response' => 'success'
+      'response' => 'success',
   ];
 });
 
@@ -569,11 +569,11 @@ Route::delete('deleteflight', function (Request $request) {
     App\CONFIRMPOOL::where('event_id', $data['event']['id'])->where('flight_id', $data['flight']['id'])->delete();
 
     return [
-      'response' => 'success'
+      'response' => 'success',
   ];
 });
 
-Route::patch('updateevent', function(Request $request) {
+Route::patch('updateevent', function (Request $request) {
     $request = $request->json()->all();
 
     if (empty($request['access_key']) || empty($request['data']['event']['id'])) {
@@ -628,10 +628,9 @@ Route::patch('updateevent', function(Request $request) {
 
     if (App\EVENT::where('token', $request['access_key'])->where('event_id', $data['event']['id'])->update($update)) {
         return [
-          'response' => 'success'
+          'response' => 'success',
       ];
-    }
-    else {
+    } else {
         return [
             'response' => 'error',
             'remark'   => 'unexpected error has occred',
