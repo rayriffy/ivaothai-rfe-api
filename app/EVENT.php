@@ -22,14 +22,14 @@ class EVENT extends Model
         'booktime_start',
         'booktime_end',
         'airport_departure',
-        'airport_arrival'
+        'airport_arrival',
     ];
 
     protected $hidden = [
         'id',
         'created_at',
         'updated_at',
-        'deleted_at'
+        'deleted_at',
     ];
 
     protected $dates = ['deleted_at'];
