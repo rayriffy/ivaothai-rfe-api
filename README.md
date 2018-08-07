@@ -1,8 +1,6 @@
 IVAO Thailand Division Universal RFE Booking System
 ===================================================
 
-[![CircleCI](https://circleci.com/gh/rayriffy/ivaothai-rfe-api.svg?style=svg)](https://circleci.com/gh/rayriffy/ivaothai-rfe-api)
-
 Requirements
 ------------
 
