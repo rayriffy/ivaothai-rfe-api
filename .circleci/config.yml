@@ -47,7 +47,7 @@ jobs:
       - run:
           name: Deploy Server
           command: |
-            ssh -i ~/.ssh/id_rsa_c72952e0f033ca911b303a961f34a7fd $DEPLOY_HOST 'cd ~/production/rfe.rayriffy.com && git pull && composer install && php71 artisan migrate'
+            ssh -i ~/.ssh/id_rsa_c72952e0f033ca911b303a961f34a7fd $DEPLOY_HOST 'cd ~/production/rfe.ivaothai.com && git pull && composer install && php71 artisan migrate'
 workflows:
   version: 2
   build-and-deploy:
