@@ -66,6 +66,7 @@ jobs:
             cd rayriffy-com/web/data/html/rfe.ivaothai.com
             ls -l -a
             rm -rf .git/
+            rm -rf .gitignore
       - run:
           name: Push
           command: |
