@@ -57,6 +57,7 @@ jobs:
           name: Get Code
           command: |
             git clone git@github.com:rayriffy/ivaothai-rfe-api.git .
+            git chekcout release
       - run:
           name: Remove Git folder
           command: |
