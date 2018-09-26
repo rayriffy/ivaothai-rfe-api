@@ -44,6 +44,9 @@ jobs:
         enabled: true
     working_directory: ~/workspace
     steps:
+      - add_ssh_keys:
+        fingerprints:
+          - "7a:64:ff:ff:10:61:8f:f5:22:9a:60:d7:f9:d9:62:93"
       - run:
           name: Get rayriffy-com repo
           command: |
