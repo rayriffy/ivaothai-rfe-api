@@ -56,17 +56,20 @@ jobs:
       - run:
           name: Get Code
           command: |
+            cd rayriffy-com/web/data/html
             git clone git@github.com:rayriffy/ivaothai-rfe-api.git rfe.ivaothai.com
             cd rfe.ivaothai.com
             git checkout release
       - run:
           name: Remove Git folder
           command: |
+            cd rayriffy-com/web/data/html/rfe.ivaothai.com
             ls -l -a
             rm -rf .git/
       - run:
           name: Push
           command: |
+            cd rayriffy-com/web/data/html/rfe.ivaothai.com
             git add .
             git commit -m "[AUTO] rfe.ivaothai.com Deploy Triggered"
             git push origin master
