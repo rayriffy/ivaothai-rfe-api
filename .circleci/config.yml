@@ -52,6 +52,8 @@ jobs:
           command: |
             git clone git@gitlab.com:rayriffy/rayriffy-com.git
             cd rayriffy-com/web/data/html
+            mkdir ~/tmp
+            mv rfe.ivaothai.com/.env ~/tmp/.env
             rm -rf rfe.ivaothai.com
       - run:
           name: Get Code
@@ -67,6 +69,8 @@ jobs:
             ls -l -a
             rm -rf .git/
             rm -rf .gitignore
+            rm -rf .circleci/
+            mv ~/tmp/.env ./.env
       - run:
           name: Push
           command: |
