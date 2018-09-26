@@ -59,6 +59,8 @@ jobs:
       - run:
           name: Push
           command: |
+            git add .
+            git commit -m "[AUTO] rfe.ivaothai.com Deploy Triggered"
             git push origin master
 workflows:
   version: 2
