@@ -47,7 +47,7 @@ jobs:
       - run:
           name: Get rayriffy-com repo
           command: |
-            git pull git@gitlab.com:rayriffy/rayriffy-com.git
+            git clone git@gitlab.com:rayriffy/rayriffy-com.git
             cd rayriffy-com/web/data/html/rfe.ivaothai.com
             rm -rf *
       - checkout
