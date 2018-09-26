@@ -1,7 +1,7 @@
 version: 2
 jobs:
   build:
-    working_directory: /workspace
+    working_directory: ~/workspace
     docker:
       - image: registry.gitlab.com/rayriffy/rayriffy-com/composer-yarn:latest
         auth:
@@ -42,7 +42,7 @@ jobs:
   deploy:
     machine:
         enabled: true
-    working_directory: /workspace
+    working_directory: ~/workspace
     steps:
       - run:
           name: Get rayriffy-com repo
