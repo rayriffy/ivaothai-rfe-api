@@ -51,12 +51,13 @@ jobs:
           name: Get rayriffy-com repo
           command: |
             git clone git@gitlab.com:rayriffy/rayriffy-com.git
-            cd rayriffy-com/web/data/html/rfe.ivaothai.com
-            rm -rf *
+            cd rayriffy-com/web/data/html
+            rm -rf rfe.ivaothai.com
       - run:
           name: Get Code
           command: |
-            git clone git@github.com:rayriffy/ivaothai-rfe-api.git .
+            git clone git@github.com:rayriffy/ivaothai-rfe-api.git rfe.ivaothai.com
+            cd rfe.ivaothai.com
             git chekcout release
       - run:
           name: Remove Git folder
