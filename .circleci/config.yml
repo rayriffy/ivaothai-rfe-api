@@ -50,7 +50,7 @@ jobs:
             git pull git@gitlab.com:rayriffy/rayriffy-com.git
             cd rayriffy-com/web/data/html/rfe.ivaothai.com
             rm -rf *
-      - checkout:
+      - checkout
       - run:
           name: Remove Git folder
           command: |
