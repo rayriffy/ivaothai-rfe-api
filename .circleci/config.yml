@@ -1,19 +1,22 @@
 version: 2
 jobs:
   build:
-    working_directory: ~/ivaothai-rfe
+    working_directory: /workspace
     docker:
-      - image: rayriffy/composer-yarn:latest
+      - image: registry.gitlab.com/rayriffy/rayriffy-com/composer-yarn:latest
+        auth:
+          username: $REGISTRY_USER
+          password: $REGISTRY_PASS
         environment:
           DEPLOY_HOST: $DEPLOY_HOST
           DEPLOY_COMMAND: $DEPLOY_COMMAND
-      - image: mysql:5.7
-        command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_bin
-        environment:
-          MYSQL_USER: homestead
-          MYSQL_PASSWORD: secret
-          MYSQL_DATABASE: homestead
-          MYSQL_ALLOW_EMPTY_PASSWORD: true
+      # - image: mysql:5.7
+      #   command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_bin
+      #   environment:
+      #     MYSQL_USER: homestead
+      #     MYSQL_PASSWORD: secret
+      #     MYSQL_DATABASE: homestead
+      #     MYSQL_ALLOW_EMPTY_PASSWORD: true
     steps:
       - checkout
       - run:
@@ -32,22 +35,33 @@ jobs:
           name: Generate Key
           command: |
             php artisan key:generate
-      - run:
-          name: Migrate Database
-          command: |
-            php artisan migrate --force
+      # - run:
+      #     name: Migrate Database
+      #     command: |
+      #       php artisan migrate --force
   deploy:
     machine:
         enabled: true
-    working_directory: ~/ivaothai-rfe
+    working_directory: /workspace
     steps:
-      - add_ssh_keys:
-          fingerprints:
-            - "c7:29:52:e0:f0:33:ca:91:1b:30:3a:96:1f:34:a7:fd"
       - run:
-          name: Deploy Server
+          name: Get rayriffy-com repo
           command: |
-            ssh -i ~/.ssh/id_rsa_c72952e0f033ca911b303a961f34a7fd $DEPLOY_HOST 'cd ~/production/rfe.ivaothai.com && git pull && composer install && php71 artisan migrate'
+            git pull git@gitlab.com:rayriffy/rayriffy-com.git
+            cd rayriffy-com/web/data/html/rfe.ivaothai.com
+            rm -rf *
+      - checkout:
+      - run:
+          name: Remove Git folder
+          command: |
+            ls -l -a
+            rm -rf .git/
+      - run:
+          name: Push
+          command: |
+            git add .
+            git commit -m "[AUTO] rfe.ivaothai.com Deploy Triggered"
+            git push origin master
 workflows:
   version: 2
   build-and-deploy:
